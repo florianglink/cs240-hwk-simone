@@ -1,6 +1,10 @@
 let testColors = ["B", "G", "R", "Y"];
 let rounds = document.querySelector("#rounds").value;
 let playing;
+let greetingInterval = 120;
+let roundInterval = 400;
+let correctSequence = [];
+let userSequence = [];
 
 
 function getSequence() {
@@ -12,9 +16,118 @@ function getSequence() {
 }
 
 function startGame() {
-    gameListeners();
+   gameListeners();
+   correctSequence = getSequence();
+   userSequence = [];
+   playGreeting();
+
 }
-gameListeners();
+
+let playButton = document.querySelector("#play");
+playButton.addEventListener("click", function() {
+    playing = true;
+    startGame();
+});
+
+async function playGreeting() {
+    for(var i=0; i<12; i++) {
+        await new Promise((resolve) =>
+            setTimeout(() => {
+                resolve();
+            }, greetingInterval)
+        );
+        color = testColors[Math.floor(Math.random()*testColors.length)]
+        if(color == "R") {
+            redGo(greetingInterval);
+        }
+        else if(color == "B") {
+            blueGo(greetingInterval);
+        }
+         else if(color == "G") {
+            greenGo(greetingInterval);
+        }
+         else if(color == "Y") {
+            yellowGo(greetingInterval);
+        }
+        await new Promise((resolve) =>
+            setTimeout(() => {
+                resolve();
+            }, greetingInterval)
+        );
+    }
+}
+
+
+async function redGo(interval) {
+    let redSq = document.querySelector("#redSq");
+    redSq.classList.add("lightred");
+    new Audio("sounds/red.wav").play();
+    await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, interval)
+    );
+    redSq.classList.remove("lightred");
+}
+
+async function blueGo(interval) {
+    let blueSq = document.querySelector("#blueSq");
+    blueSq.classList.add("lightblue");
+    new Audio("sounds/blue.wav").play();
+     await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, interval)
+    );
+    blueSq.classList.remove("lightblue");
+}
+
+async function greenGo(interval) {
+    let greenSq = document.querySelector("#greenSq");
+    greenSq.classList.add("lightgreen");
+    new Audio("sounds/green.wav").play();
+     await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, interval)
+    );
+    greenSq.classList.remove("lightgreen");
+}
+
+async function yellowGo(interval) {
+    let yellowSq = document.querySelector("#yellowSq");
+    yellowSq.classList.add("lightyellow");
+    new Audio("sounds/yellow.wav").play();
+     await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, interval)
+    );
+    yellowSq.classList.remove("lightyellow");
+}
+
+
+
+async function test() {
+    await redGo(roundInterval);
+    await blueGo(roundInterval);
+    await yellowGo(roundInterval);
+     await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, roundInterval/2)
+    );
+    await yellowGo(roundInterval);
+    await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, roundInterval/2)
+    );
+    await greenGo(roundInterval);
+    await redGo(roundInterval);
+}
+
+//test();
 
 function gameListeners() {
     //red button
