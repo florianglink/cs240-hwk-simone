@@ -5,30 +5,93 @@ let greetingInterval = 120;
 let roundInterval = 400;
 let correctSequence = [];
 let userSequence = [];
+let correctSoFar = true;
 
 
 function getSequence() {
-    var sequence = [];
-    for(var i=0; i<rounds; i++){
-        sequence.push(testColors[Math.floor(Math.random()*testColors.length)]);
+    console.log("entered function");
+    correctSequence = [];
+    if(rounds < 1) {
+        rounds = 10;
     }
-    return sequence;
+    for(var i=0; i<rounds; i++){
+        let newColor = testColors[Math.floor(Math.random()*testColors.length)];
+        console.log(newColor);
+        correctSequence.push(newColor);
+    }
 }
 
-function startGame() {
+async function startGame() {
    gameListeners();
-   correctSequence = getSequence();
+   getSequence();
+   console.log(correctSequence);
    userSequence = [];
    playGreeting();
-
+   await new Promise((resolve) =>
+            setTimeout(() => {
+                resolve();
+            }, 4000)
+    );
+   for(let i=0; i<correctSequence.length; i++) {
+       await new Promise((resolve) =>
+              setTimeout(() => {
+                resolve();
+              }, roundInterval/2)
+           );
+       for(let j=0; j<i; j++) {
+           await new Promise((resolve) =>
+              setTimeout(() => {
+                resolve();
+              }, roundInterval)
+           );
+           playColor(correctSequence[j]);
+           await new Promise((resolve) =>
+              setTimeout(() => {
+                resolve();
+              }, roundInterval/2)
+           );
+       }
+        await new Promise((resolve) =>
+            setTimeout(() => {
+                resolve();
+            }, roundInterval)
+        );
+   }
 
 }
 
 let playButton = document.querySelector("#play");
 playButton.addEventListener("click", function() {
-    playing = true;
-    startGame();
+    if(playing != true) {
+        startGame();
+        playing = true;
+    }
 });
+
+async function playColor(c) {
+    await new Promise((resolve) =>
+              setTimeout(() => {
+                resolve();
+              }, 400)
+           );
+    if(c == "R") {
+        redGo(roundInterval);
+    }
+    else if(c == "B") {
+        blueGo(roundInterval);
+    }
+    else if(c == "G") {
+        greenGo(roundInterval);
+    }
+    else if(c == "Y") {
+        yellowGo(roundInterval);
+    }
+    await new Promise((resolve) =>
+              setTimeout(() => {
+                resolve();
+              }, 400)
+           );
+}
 
 async function playGreeting() {
     for(var i=0; i<12; i++) {
@@ -37,7 +100,7 @@ async function playGreeting() {
                 resolve();
             }, greetingInterval)
         );
-        color = testColors[Math.floor(Math.random()*testColors.length)]
+        let color = testColors[Math.floor(Math.random()*testColors.length)]
         if(color == "R") {
             redGo(greetingInterval);
         }
@@ -157,6 +220,8 @@ function gameListeners() {
     redSq.addEventListener("mouseup", function() {
         redSq.classList.remove("lightred");
         new Audio("sounds/red.wav").play();
+         userSequence.push("R");
+         correctSoFar = isCorrectSequence();
 
     });
 
@@ -177,6 +242,8 @@ function gameListeners() {
     blueSq.addEventListener("mouseup", function() {
         blueSq.classList.remove("lightblue");
         new Audio("sounds/blue.wav").play();
+        userSequence.push("B");
+        correctSoFar = isCorrectSequence();
     });
 
     //green button
@@ -196,6 +263,8 @@ function gameListeners() {
     greenSq.addEventListener("mouseup", function() {
         greenSq.classList.remove("lightgreen");
         new Audio("sounds/green.wav").play();
+         userSequence.push("G");
+         correctSoFar = isCorrectSequence();
     });
 
     //yellow button
@@ -215,5 +284,7 @@ function gameListeners() {
     yellowSq.addEventListener("mouseup", function() {
         yellowSq.classList.remove("lightyellow");
         new Audio("sounds/yellow.wav").play();
+         userSequence.push("Y");
+         correctSoFar = isCorrectSequence();
     });
 }
