@@ -21,6 +21,7 @@ function startGame() {
    userSequence = [];
    playGreeting();
 
+
 }
 
 let playButton = document.querySelector("#play");
@@ -129,6 +130,15 @@ async function test() {
 
 //test();
 
+function isCorrectSequence() {
+    for(var i=0; i<userSequence.length; i++) {
+        if(userSequence[i] != correctSequence[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function gameListeners() {
     //red button
     let redSq = document.querySelector("#redSq");
@@ -147,6 +157,7 @@ function gameListeners() {
     redSq.addEventListener("mouseup", function() {
         redSq.classList.remove("lightred");
         new Audio("sounds/red.wav").play();
+
     });
 
     //blue button
