@@ -9,14 +9,12 @@ let correctSoFar = true;
 
 
 function getSequence() {
-    console.log("entered function");
     correctSequence = [];
     if(rounds < 1) {
         rounds = 10;
     }
     for(var i=0; i<rounds; i++){
         let newColor = testColors[Math.floor(Math.random()*testColors.length)];
-        console.log(newColor);
         correctSequence.push(newColor);
     }
 }
@@ -24,7 +22,6 @@ function getSequence() {
 async function startGame() {
    gameListeners();
    getSequence();
-   console.log(correctSequence);
    userSequence = [];
    playGreeting();
    await new Promise((resolve) =>
@@ -57,7 +54,7 @@ async function startGame() {
             }, roundInterval)
         );
    }
-
+   playing = false;
 }
 
 let playButton = document.querySelector("#play");
