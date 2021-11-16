@@ -5,7 +5,8 @@ let greetingInterval = 120;
 let roundInterval = 400;
 let correctSequence = [];
 let userSequence = [];
-let correctSoFar = true;
+let correctSoFar;
+let currentRound = 1;
 
 
 function getSequence() {
@@ -167,29 +168,6 @@ async function yellowGo(interval) {
     yellowSq.classList.remove("lightyellow");
 }
 
-
-
-async function test() {
-    await redGo(roundInterval);
-    await blueGo(roundInterval);
-    await yellowGo(roundInterval);
-     await new Promise((resolve) =>
-        setTimeout(() => {
-            resolve(); 
-        }, roundInterval/2)
-    );
-    await yellowGo(roundInterval);
-    await new Promise((resolve) =>
-        setTimeout(() => {
-            resolve(); 
-        }, roundInterval/2)
-    );
-    await greenGo(roundInterval);
-    await redGo(roundInterval);
-}
-
-//test();
-
 function isCorrectSequence() {
     for(var i=0; i<userSequence.length; i++) {
         if(userSequence[i] != correctSequence[i]) {
@@ -197,6 +175,21 @@ function isCorrectSequence() {
         }
     }
     return true;
+}
+
+async function updateGameStatus() {
+    if(!correctSoFar) {
+        //game over, you lose
+    }
+    else if(correctSoFar && userSequence.length == rounds-1){
+        //game over, you win!
+    }
+    else {
+        currentRound++;
+        for(var i=0; i<currentRound; i++) {
+            playColor(correctSequence[i]);
+        }
+    }
 }
 
 function gameListeners() {
@@ -219,7 +212,6 @@ function gameListeners() {
         new Audio("sounds/red.wav").play();
          userSequence.push("R");
          correctSoFar = isCorrectSequence();
-
     });
 
     //blue button
