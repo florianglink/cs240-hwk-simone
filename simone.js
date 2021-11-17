@@ -5,7 +5,6 @@ let greetingInterval = 120;
 let roundInterval = 400;
 let correctSequence = [];
 let userSequence = [];
-let correctSoFar;
 let currentRound = 1;
 
 
@@ -23,6 +22,7 @@ function getSequence() {
 async function startGame() {
    gameListeners();
    getSequence();
+   currentRound = 1;
    userSequence = [];
    playGreeting();
    await new Promise((resolve) =>
@@ -30,31 +30,7 @@ async function startGame() {
                 resolve();
             }, 4000)
     );
-   for(let i=0; i<correctSequence.length; i++) {
-       await new Promise((resolve) =>
-              setTimeout(() => {
-                resolve();
-              }, roundInterval/2)
-           );
-       for(let j=0; j<i; j++) {
-           await new Promise((resolve) =>
-              setTimeout(() => {
-                resolve();
-              }, roundInterval)
-           );
-           playColor(correctSequence[j]);
-           await new Promise((resolve) =>
-              setTimeout(() => {
-                resolve();
-              }, roundInterval/2)
-           );
-       }
-        await new Promise((resolve) =>
-            setTimeout(() => {
-                resolve();
-            }, roundInterval)
-        );
-   }
+   playColor(correctSequence[0]);
    playing = false;
 }
 
@@ -178,18 +154,55 @@ function isCorrectSequence() {
 }
 
 async function updateGameStatus() {
-    if(!correctSoFar) {
-        //game over, you lose
+    if(!isCorrectSequence()) {
+        console.log(isCorrectSequence());
+        console.log("about to lose");
+        console.log(userSequence);
+        console.log(correctSequence);
+        gameOverLose();
     }
-    else if(correctSoFar && userSequence.length == rounds-1){
-        //game over, you win!
+    else if(isCorrectSequence() && userSequence.length == rounds-1){
+        gameOverWin();
     }
     else {
         currentRound++;
+        if(userSequence.length == currentRound -1) {
+            userSequence = [];
+            new Audio("sounds/nextRound.wav").play();
+        }
+        await new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(); 
+        }, 800)
+        );
         for(var i=0; i<currentRound; i++) {
+            await new Promise((resolve) =>
+                setTimeout(() => {
+                resolve(); 
+            }, 400)
+    );
             playColor(correctSequence[i]);
         }
+        await new Promise((resolve) =>
+            setTimeout(() => {
+            resolve(); 
+            }, 800)
+        );
     }
+}
+
+function gameOverLose() {
+    let status = document.querySelector("#status");
+    status.innerHTML = "Incorrect, game over!";
+    document.querySelector("body").style.backgroundColor = "hotpink";
+    new Audio("sounds/lose.wav").play();
+}
+
+function gameOverWin() {
+    let status = document.querySelector("#status");
+    status.innerHTML = "Yay you win!";
+    document.querySelector.style.backgroundColor = "DeepSkyBlue";
+    new Audio("sounds/win.wav").play();
 }
 
 function gameListeners() {
@@ -211,7 +224,10 @@ function gameListeners() {
         redSq.classList.remove("lightred");
         new Audio("sounds/red.wav").play();
          userSequence.push("R");
-         correctSoFar = isCorrectSequence();
+         if(!isCorrectSequence()) {
+            new Audio("sounds/wrong.wav").play();
+         }
+         updateGameStatus();
     });
 
     //blue button
@@ -232,7 +248,10 @@ function gameListeners() {
         blueSq.classList.remove("lightblue");
         new Audio("sounds/blue.wav").play();
         userSequence.push("B");
-        correctSoFar = isCorrectSequence();
+        if(!isCorrectSequence()) {
+            new Audio("sounds/wrong.wav").play();
+         }
+         updateGameStatus();
     });
 
     //green button
@@ -253,7 +272,10 @@ function gameListeners() {
         greenSq.classList.remove("lightgreen");
         new Audio("sounds/green.wav").play();
          userSequence.push("G");
-         correctSoFar = isCorrectSequence();
+         if(!isCorrectSequence()) {
+            new Audio("sounds/wrong.wav").play();
+         }
+         updateGameStatus();
     });
 
     //yellow button
@@ -274,6 +296,9 @@ function gameListeners() {
         yellowSq.classList.remove("lightyellow");
         new Audio("sounds/yellow.wav").play();
          userSequence.push("Y");
-         correctSoFar = isCorrectSequence();
+         if(!isCorrectSequence()) {
+            new Audio("sounds/wrong.wav").play();
+         }
+         updateGameStatus();
     });
 }
