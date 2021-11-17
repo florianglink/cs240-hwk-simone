@@ -1,5 +1,5 @@
 let testColors = ["B", "G", "R", "Y"];
-let rounds = document.querySelector("#rounds").value;
+let rounds = parseInt(document.querySelector("#rounds").value, 10);
 let playing;
 let greetingInterval = 120;
 let roundInterval = 400;
@@ -9,6 +9,7 @@ let currentRound = 1;
 
 
 function getSequence() {
+    console.log(rounds);
     correctSequence = [];
     if(rounds < 1) {
         rounds = 10;
@@ -19,21 +20,22 @@ function getSequence() {
     }
 }
 
+//starts the first round of the game
 async function startGame() {
-   gameListeners();
-   getSequence();
+   gameListeners(); //initialize the event listeners for the color buttons
+   getSequence();   //get the solution sequence
    currentRound = 1;
    userSequence = [];
    playGreeting();
    await new Promise((resolve) =>
             setTimeout(() => {
                 resolve();
-            }, 4000)
+            }, 4500)
     );
-   playColor(correctSequence[0]);
+   playColor(correctSequence[0]); //play the first color of the sequence
 }
 
-let playButton = document.querySelector("#play");
+let playButton = document.querySelector("#play");  //clicking the play button starts the game
 playButton.addEventListener("click", function() {
     if(playing != true) {
         startGame();
@@ -41,6 +43,10 @@ playButton.addEventListener("click", function() {
     }
 });
 
+//given an input character, this function plays the correct sound, and lights up the correct
+//color button corresponding to the character that was input.
+//@param c the character to determine which color to play. The only inputs passed into this function will be 
+//"R", "B", "G", or "Y".
 async function playColor(c) {
     await new Promise((resolve) =>
               setTimeout(() => {
@@ -66,6 +72,7 @@ async function playColor(c) {
            );
 }
 
+//Plays the greeting sequence at the beginning of the game
 async function playGreeting() {
     for(var i=0; i<12; i++) {
         await new Promise((resolve) =>
@@ -95,6 +102,7 @@ async function playGreeting() {
 }
 
 
+//simulates a button press by lighting up and playing the correct sound for the color
 async function redGo(interval) {
     let redSq = document.querySelector("#redSq");
     redSq.classList.add("lightred");
@@ -107,6 +115,7 @@ async function redGo(interval) {
     redSq.classList.remove("lightred");
 }
 
+//simulates a button press by lighting up and playing the correct sound for the color
 async function blueGo(interval) {
     let blueSq = document.querySelector("#blueSq");
     blueSq.classList.add("lightblue");
@@ -119,6 +128,7 @@ async function blueGo(interval) {
     blueSq.classList.remove("lightblue");
 }
 
+//simulates a button press by lighting up and playing the correct sound for the color
 async function greenGo(interval) {
     let greenSq = document.querySelector("#greenSq");
     greenSq.classList.add("lightgreen");
@@ -131,6 +141,7 @@ async function greenGo(interval) {
     greenSq.classList.remove("lightgreen");
 }
 
+//simulates a button press by lighting up and playing the correct sound for the color
 async function yellowGo(interval) {
     let yellowSq = document.querySelector("#yellowSq");
     yellowSq.classList.add("lightyellow");
@@ -143,6 +154,7 @@ async function yellowGo(interval) {
     yellowSq.classList.remove("lightyellow");
 }
 
+//checks if the current sequence that the user has input matches the solution sequence. 
 function isCorrectSequence() {
     for(var i=0; i<userSequence.length; i++) {
         if(userSequence[i] != correctSequence[i]) {
@@ -152,45 +164,54 @@ function isCorrectSequence() {
     return true;
 }
 
+//this function is called whenever a user presses a color. It checks if the input was
+//correct of not and then updates the game status accordingly.
 async function updateGameStatus() {
+    //the user put in a wrong color. They lose
     if(!isCorrectSequence()) {
         gameOverLose();
     }
+    //the user put in the correct sequence on the final round. They win!
     else if(isCorrectSequence() && userSequence.length == rounds-1){
         gameOverWin();
     }
     else {
-        currentRound++;
-        if(userSequence.length == currentRound -1) {
-            userSequence = [];
-            new Audio("sounds/nextRound.wav").play();
-        }
-        await new Promise((resolve) =>
-        setTimeout(() => {
-            resolve(); 
-        }, 800)
-        );
-        for(var i=0; i<currentRound; i++) {
+        //if the user has put in the correct sequence for the entire current round, start the next round
+        //otherwise do nothing and wait for more inputs
+        if(userSequence.length == currentRound) {
+            currentRound++;
+            if(userSequence.length == currentRound-1) {
+                userSequence = [];
+                new Audio("sounds/nextRound.wav").play();
+            }
             await new Promise((resolve) =>
-                setTimeout(() => {
-                resolve(); 
-            }, 400)
-            );
-            playColor(correctSequence[i]);
-            await new Promise((resolve) =>
-                setTimeout(() => {
-                resolve(); 
-                }, 400)
-            );
-        }
-        await new Promise((resolve) =>
             setTimeout(() => {
-            resolve(); 
+                resolve(); 
             }, 800)
-        );
+            );
+            for(var i=0; i<currentRound; i++) {
+                await new Promise((resolve) =>
+                    setTimeout(() => {
+                    resolve(); 
+                }, 400)
+                );
+                playColor(correctSequence[i]);
+                await new Promise((resolve) =>
+                    setTimeout(() => {
+                    resolve(); 
+                    }, 400)
+                );
+            }
+            await new Promise((resolve) =>
+                setTimeout(() => {
+                resolve(); 
+                }, 800)
+            );
+        }
     }
 }
 
+//called when the user loses; plays the loss sound, changes the background to hot pink, and tells the user the game is over
 function gameOverLose() {
     let status = document.querySelector("#status");
     status.innerHTML = "Incorrect, game over!";
@@ -198,13 +219,17 @@ function gameOverLose() {
     new Audio("sounds/lose.wav").play();
 }
 
+//called when the user wins; plays the win sound, changes the background color to blue, and tells the user they won
 function gameOverWin() {
     let status = document.querySelector("#status");
     status.innerHTML = "Yay you win!";
-    document.querySelector.style.backgroundColor = "DeepSkyBlue";
+    status.style.backgroundColor = "DeepSkyBlue";
     new Audio("sounds/win.mp3").play();
 }
 
+//listeners for each color button to display correct behavior during gameplay.
+//Each time a color is clicked it also calls updateGameStatus to determine what action, if any,
+//needs to be taken.
 function gameListeners() {
     //red button
     let redSq = document.querySelector("#redSq");
