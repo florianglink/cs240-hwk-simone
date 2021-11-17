@@ -8,19 +8,6 @@ let correctSequence = [];
 let userSequence = [];
 let currentRound = 1;
 
-
-function getSequence() {
-    console.log(rounds.value);
-    correctSequence = [];
-    if(rounds.value < 1) {
-        rounds.value = 10;
-    }
-    for(var i=0; i<=rounds.value; i++){
-        let newColor = testColors[Math.floor(Math.random()*testColors.length)];
-        correctSequence.push(newColor);
-    }
-}
-
 //starts the first round of the game
 async function startGame() {
    gameListeners(); //initialize the event listeners for the color buttons
@@ -31,6 +18,7 @@ async function startGame() {
    currentRound = 1;
    userSequence = [];
    let greeting = await getStartSequence();
+   //play the greeting
    for(var i=0; i<greeting.length; i++) {
        await new Promise((resolve) =>
        setTimeout(() => {
@@ -44,7 +32,6 @@ async function startGame() {
         }, 120)
         );
    }
-   //playGreeting();
    await new Promise((resolve) =>
             setTimeout(() => {
                 resolve();
@@ -89,36 +76,6 @@ async function playColor(c) {
               }, 400)
            );
 }
-
-//Plays the greeting sequence at the beginning of the game
-async function playGreeting() {
-    for(var i=0; i<12; i++) {
-        await new Promise((resolve) =>
-            setTimeout(() => {
-                resolve();
-            }, greetingInterval)
-        );
-        let color = testColors[Math.floor(Math.random()*testColors.length)]
-        if(color == "R") {
-            redGo(greetingInterval);
-        }
-        else if(color == "B") {
-            blueGo(greetingInterval);
-        }
-         else if(color == "G") {
-            greenGo(greetingInterval);
-        }
-         else if(color == "Y") {
-            yellowGo(greetingInterval);
-        }
-        await new Promise((resolve) =>
-            setTimeout(() => {
-                resolve();
-            }, greetingInterval)
-        );
-    }
-}
-
 
 //simulates a button press by lighting up and playing the correct sound for the color
 async function redGo(interval) {
@@ -188,8 +145,6 @@ async function updateGameStatus() {
     //the user put in a wrong color. They lose
     if(!isCorrectSequence()) {
         gameOverLose();
-        console.log(userSequence);
-        console.log(correctSequence);
     }
     //the user put in the correct sequence on the final round. They win!
     else if(isCorrectSequence() && userSequence.length == rounds.value){
@@ -366,6 +321,7 @@ function gameListeners() {
     });
 }
 
+//Retreieves the greeting sequence from the API
 async function getStartSequence() {
     try {
       let response = await axios.get(
@@ -377,6 +333,8 @@ async function getStartSequence() {
     }
 }
 
+//Retrieves the solution sequence from the API
+//@param rounds the number of rounds to play, which will equal the length of the solution sequence
 async function getSolutionSequence(rounds) {
     try {
       let response = await axios.get(
