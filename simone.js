@@ -180,8 +180,13 @@ async function updateGameStatus() {
                 setTimeout(() => {
                 resolve(); 
             }, 400)
-    );
+            );
             playColor(correctSequence[i]);
+            await new Promise((resolve) =>
+                setTimeout(() => {
+                resolve(); 
+                }, 400)
+            );
         }
         await new Promise((resolve) =>
             setTimeout(() => {
@@ -226,8 +231,12 @@ function gameListeners() {
          userSequence.push("R");
          if(!isCorrectSequence()) {
             new Audio("sounds/wrong.wav").play();
+            updateGameStatus();
          }
-         updateGameStatus();
+         else if(isCorrectSequence && userSequence.length<currentRound-2) {}
+         else {
+            updateGameStatus();
+         }
     });
 
     //blue button
@@ -250,8 +259,12 @@ function gameListeners() {
         userSequence.push("B");
         if(!isCorrectSequence()) {
             new Audio("sounds/wrong.wav").play();
+            updateGameStatus();
          }
-         updateGameStatus();
+         else if(isCorrectSequence && userSequence.length<currentRound-2) {}
+         else {
+            updateGameStatus();
+         }
     });
 
     //green button
@@ -274,8 +287,12 @@ function gameListeners() {
          userSequence.push("G");
          if(!isCorrectSequence()) {
             new Audio("sounds/wrong.wav").play();
+            updateGameStatus();
          }
-         updateGameStatus();
+         else if(isCorrectSequence && userSequence.length<currentRound-2) {}
+         else {
+            updateGameStatus();
+         }
     });
 
     //yellow button
@@ -298,7 +315,11 @@ function gameListeners() {
          userSequence.push("Y");
          if(!isCorrectSequence()) {
             new Audio("sounds/wrong.wav").play();
+            updateGameStatus();
          }
-         updateGameStatus();
+         else if(isCorrectSequence && userSequence.length<currentRound-2) {}
+         else {
+            updateGameStatus();
+         }
     });
 }
