@@ -31,7 +31,6 @@ async function startGame() {
             }, 4000)
     );
    playColor(correctSequence[0]);
-   playing = false;
 }
 
 let playButton = document.querySelector("#play");
@@ -155,10 +154,6 @@ function isCorrectSequence() {
 
 async function updateGameStatus() {
     if(!isCorrectSequence()) {
-        console.log(isCorrectSequence());
-        console.log("about to lose");
-        console.log(userSequence);
-        console.log(correctSequence);
         gameOverLose();
     }
     else if(isCorrectSequence() && userSequence.length == rounds-1){
@@ -207,7 +202,7 @@ function gameOverWin() {
     let status = document.querySelector("#status");
     status.innerHTML = "Yay you win!";
     document.querySelector.style.backgroundColor = "DeepSkyBlue";
-    new Audio("sounds/win.wav").play();
+    new Audio("sounds/win.mp3").play();
 }
 
 function gameListeners() {
